@@ -45,21 +45,24 @@ async function get({ startDate, count, daysInBetween, interval }) {
 }
 
 
-async function repeatRequestInDay({ interval }) {
+
+async function repeatRequestInDay({ loopInterval, startDate, count, daysInBetween, interval }) {
     let s = new Date().getTime();
     let e = new Date().setHours(23, 59, 59, 999);
     let diff = e - s;
 
-    let totalCount = Math.floor(diff / interval);
+    let totalCount = Math.floor(diff / loopInterval) / count;
 
     for (var i = 0; i < totalCount; i++) {
-        get({
-            startDate: "06/5/2023",
-            count: 3,
-            daysInBetween: 14,
-            interval: 10000,
-        });
+        get({ startDate, count, daysInBetween, interval });
     }
 }
 
-repeatRequestInDay({ interval: 60000 })
+repeatRequestInDay({
+    loopInterval: 60000,
+
+    startDate: "06/5/2023",
+    count: 3,
+    daysInBetween: 14,
+    interval: 10000,
+})
