@@ -1,4 +1,5 @@
 async function get({ startDate, count, daysInBetween, interval }) {
+    let fileNamePrefix = Date.now().toString();
     let timeSeries = [];
 
     for (let index = 0; index < count; index++) {
@@ -36,21 +37,19 @@ async function get({ startDate, count, daysInBetween, interval }) {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(response));
         const downloadAnchorNode = document.createElement('a');
         downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", `${start}-${end}.json`);
-        document.body.appendChild(downloadAnchorNode); // required for firefox
+        downloadAnchorNode.setAttribute("download", `${fileNamePrefix}-${start}-${end}.json`);
+        document.body.appendChild(downloadAnchorNode);
         downloadAnchorNode.click();
         downloadAnchorNode.remove();
         await new Promise((res) => setTimeout(res, interval));
     }
 }
 
-async function repeatRequestInDay({ loopInterval }, { startDate, count, daysInBetween, reqInterval }) {
+(async ({ loopInterval }) => {
     const end = new Date().setHours(23, 59, 59, 999);
 
-    while (end <= Date.now()) {
-        get({ startDate, count, daysInBetween, reqInterval });
+    while (end >= Date.now()) {
+        get({ startDate: "06/5/2023", count: 3, daysInBetween: 14, interval: 10000, });
         await new Promise((res) => setTimeout(res, loopInterval));
     }
-}
-
-repeatRequestInDay({ loopInterval: 60000 }, { startDate: "06/5/2023", count: 3, daysInBetween: 14, reqInterval: 10000 })
+})({ loopInterval: 100000 })
