@@ -46,28 +46,22 @@ async function get({ startDate, count, daysInBetween, interval }) {
 
 
 
-async function repeatRequestInDay({ loopInterval, startDate, count, daysInBetween, reqInterval }) {
-    const s = new Date().getTime();
-    const e = new Date().setHours(23, 59, 59, 999);
-    const diff = e - s;
+async function repeatRequestInDay({ loopInterval }, { startDate, count, daysInBetween, reqInterval }) {
+    const end = new Date().setHours(23, 59, 59, 999);
 
-    const singleReqLoopInterval = count * reqInterval;
-
-    const totalCount = Math.floor(diff / singleReqLoopInterval);
-    // const totalCount = Math.floor(diff / loopInterval) / (count);
-
-    for (var i = 0; i < totalCount; i++) {
-        if (e <= Date.now()) return
+    while (end <= Date.now()) {
         get({ startDate, count, daysInBetween, reqInterval });
-
+        await new Promise((res) => setTimeout(res, loopInterval));
     }
 }
 
-repeatRequestInDay({
-    loopInterval: 60000,
-
-    startDate: "06/5/2023",
-    count: 3,
-    daysInBetween: 14,
-    reqInterval: 10000,
-})
+repeatRequestInDay(
+    {
+        loopInterval: 60000
+    },
+    {
+        startDate: "06/5/2023",
+        count: 3,
+        daysInBetween: 14,
+        reqInterval: 10000,
+    })
